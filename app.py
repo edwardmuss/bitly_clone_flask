@@ -1,8 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request, url_for
 from models.url_model import Urls
 from core.chars_regenerate import shorten_url
-from core import app, db
+from core import app
+from core.routes import web
 
-@app.route("/")
-def hello_world():
-    return render_template('index.html')
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)

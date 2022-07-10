@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Bitly Clone{% endblock %}
+
+{% block content %}
+<form id="form" action="#", method="post">
+    <label for="url">Enter an (https) URL:</label>
+
+    <input type="url" name="url" id="url" placeholder="https://www.youtube.com/watch?v=wN_keiguwQY" pattern="https://.*" size="50" required>
+    <br>
+    <input type="submit" value="submit" class="btn btn-primary">
+    <p id="output"></p>
+</form>
+{% endblock %}
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->

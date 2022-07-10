@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from models.url_model import Urls
 from core.chars_regenerate import shorten_url
-from core import app, db
+from core import *
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -21,7 +21,7 @@ def home():
             db.session.add(new_url)
             db.session.commit()
             # return redirect(url_for("display_short_url", url=short_url))
-        return jsonify({'output': short_url})
+        return jsonify({'output': base_url + '/' + short_url})
         # return jsonify({'error' : 'Error!'})
     else:
         return render_template('index.html')

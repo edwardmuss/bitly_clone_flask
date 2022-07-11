@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}View all URLS{% endblock %}
+
+{% block content %}
+    <div class="row bg-primary pt-5">
+        <div class="container">
+            <div class="col-md-12 mt-5 mb-5">
+                <h2 class="">All URLs</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="container">
+            <div class="col-md-12 mt-5">
+                <table class="table table-stripped table-bordered">
+                    <thead class="">
+                        <th>Long</th>
+                        <th>Short</th>
+                    </thead>
+                    <tbody>
+                        {% for url in vals %}
+                        <tr>
+                            <td>{{url.long}}</td>
+                            <td>{{base_url + '/' + url.short}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -34,7 +34,6 @@ def redirection(short_url):
     else:
         return f'<h1>Url doesnt exist</h1>'
 
-@app.route('/all_urls')
+@app.route('/all-urls')
 def display_all():
-    # return render_template('all_urls.html', vals=Urls.query.all())
-    return "all"
+    return render_template('all-urls.html', vals=Urls.query.all(), base_url=base_url)

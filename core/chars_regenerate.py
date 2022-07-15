@@ -4,7 +4,7 @@ import string
 from models.url_model import Urls
 
 
-def shorten_url():
+def shorten_url_generate():
     letters = string.ascii_lowercase + string.ascii_uppercase
     while True:
         rand_letters = random.choices(letters, k=5)

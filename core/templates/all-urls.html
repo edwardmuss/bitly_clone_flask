@@ -17,12 +17,16 @@
                     <thead class="">
                         <th>Long</th>
                         <th>Short</th>
+                        <th>Hits</th>
+                        <th>UserId</th>
                     </thead>
                     <tbody>
-                        {% for url in vals %}
+                        {% for row in vals %}
                         <tr>
-                            <td>{{url.long}}</td>
-                            <td>{{base_url + '/' + url.short}}</td>
+                            <td>{{row.long}}</td>
+                            <td><a href="{{base_url + '/' + row.short}}">{{base_url + '/' + row.short}}</a></a></td>
+                            <td>{{row.hits}}</td>
+                            <td>{{row.user_id}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -15,25 +15,57 @@
             <div class="col-md-12 mt-5">
 
                 <div class="col-md-8 offset-md-2 mt-5">
-                    {% include 'flash_messages.html' %}
-                    <form action="" method="POST">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group">
-                            {{ form.username.label }}
-                            {{ form.username(class_="form-control", size=32) }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.password.label }}
-                            {{ form.password(class_="form-control", size=32) }}
-                        </div>
-                        <!-- <div class="form-group">
-                            {{ form.remember_me.label }}
-                            {{ form.remember_me(class_="form-control") }}
-                        </div> -->
-                        {{ form.submit(class_="form-control btn btn-primary") }}
-                    </form>
-                    <br>
-                    <a href="{{ url_for('register') }}">Don't have an account? Sign Up</a>
+                    <div class="content-section">
+                        {% include 'flash_messages.html' %}
+                        <form method="POST" action="">
+                            {{ form.hidden_tag() }}
+                            <fieldset class="form-group">
+                                <legend class="border-bottom mb-4">Log In</legend>
+                                <div class="form-group">
+                                    <label class="form-control-label">Username/Email</label>
+                                    {% if form.username.errors %}
+                                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.username.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.username(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.password.label(class="form-control-label") }}
+                                    {% if form.password.errors %}
+                                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.password.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.password(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+                                <div class="form-check">
+                                    {{ form.remember_me(class="form-check-input") }}
+                                    {{ form.remember_me.label(class="form-check-label") }}
+                                </div>
+                            </fieldset>
+                            <div class="form-group">
+                                {{ form.submit(class="btn btn-primary btn-block") }}
+                                <br>
+                                <small class="text-muted ml-2">
+                                    <a href="{{ url_for('reset_request') }}">Forgot Password?</a>
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="border-top pt-3">
+                        <small class="text-muted">
+                            Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>

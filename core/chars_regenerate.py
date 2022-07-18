@@ -1,7 +1,7 @@
 import random
 import string
 
-from models.url_model import Urls
+from models.base_model import Urls
 
 
 def shorten_url_generate():

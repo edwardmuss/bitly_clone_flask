@@ -1,5 +1,4 @@
 from flask import Flask, redirect, render_template, request, url_for
-from models.url_model import Urls
 from core.chars_regenerate import shorten_url_generate
 from core import app, db
 from core.routes import web

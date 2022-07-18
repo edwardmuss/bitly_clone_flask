@@ -1,12 +1,28 @@
 import json
+import secrets
 from urllib.request import urlopen
 from flask import Flask, jsonify, redirect, render_template, request, url_for
-from models.location_model import Location
-from models.url_model import Urls
+from models.base_model import Location
+from models.base_model import User, Urls, Location
 from core.chars_regenerate import shorten_url_generate
 from flask_login import login_required, current_user
 from core.auth import *
 from core import *
+from PIL import Image
+from flask_mail import Message
+
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, '../static/profile_pics', picture_fn)
+
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -39,7 +55,8 @@ def home():
 @app.route('/<short_url>')
 def redirection(short_url):
     qry = Urls.query.filter_by(short=short_url).first()
-    url = 'http://api.ipstack.com/{}?access_key=f9b547690e6c34ecc473436fa95d132c'.format("102.167.67.171")
+    public_ip = request.remote_addr
+    url = 'https://api.ipgeolocation.io/ipgeo?apiKey=3a97a60077094f69a3e34d6b2edc4f96&ip={}'.format("197.156.137.155")
     # request.remote_addr
     response = urlopen(url)
     data = json.load(response)
@@ -62,8 +79,9 @@ def redirection(short_url):
         return f'<h1>Url doesnt exist</h1>'
 
 @app.route('/all-urls')
+@login_required
 def display_all():
-    return render_template('all-urls.html', vals=Urls.query.all(), base_url=base_url)
+    return render_template('all-urls.html', vals=Urls.query.filter_by(user_id = current_user.id).all(), base_url=base_url)
 
 @app.route('/user-location')
 def user_location():
@@ -75,11 +93,14 @@ def login():
         return redirect(request.referrer)
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data).first() or User.query.filter_by(email=form.username.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
-                login_user(user)
-                return redirect(url_for('dashboard'))
+                login_user(user, remember=form.remember_me.data)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('dashboard'))
+                # login_user(user)
+                # return redirect(url_for('dashboard'))
         flash('Username or Password is incorrect', 'error')
     return render_template('login.html', form=form)
 
@@ -91,7 +112,7 @@ def register():
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, password=hashed_password)
+        new_user = User(username=form.username.data, email=form.email.data,image_file="default.jpg", password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
         flash('You have sucessfully Registered, Please Login.', 'success')
@@ -103,7 +124,65 @@ def register():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('index.html')
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('dashboard'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
+    return render_template('dashboard.html', title='Account',
+                           image_file=image_file, form=form)
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender=('Tinly','info@cloudrebue.co.ke'),
+                  recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+    {url_for('reset_token', token=token, _external=True)}
+    If you did not make this request then simply ignore this email and no changes will be made.
+    '''
+    mail.send(msg)
+
+
+@app.route("/reset-password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+@app.route("/reset-password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    # return user
+    if user is None:
+        flash('That is an invalid or expired token', 'error')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Reset Password', form=form)
 
 
 @app.route('/logout', methods=['GET', 'POST'])

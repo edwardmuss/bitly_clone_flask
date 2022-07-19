@@ -2,7 +2,8 @@ import json
 import secrets
 from urllib.request import urlopen
 from flask import Flask, jsonify, redirect, render_template, request, url_for
-from models.base_model import Location
+from sqlalchemy import func
+from core.greetings import fun_greetings
 from models.base_model import User, Urls, Location
 from core.chars_regenerate import shorten_url_generate
 from flask_login import login_required, current_user
@@ -10,6 +11,7 @@ from core.auth import *
 from core import *
 from PIL import Image
 from flask_mail import Message
+import datetime
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
@@ -52,6 +54,10 @@ def home():
     else:
         return render_template('index.html')
 
+@app.route('/about-us')
+def about():
+    return render_template('about.html')
+
 @app.route('/<short_url>')
 def redirection(short_url):
     qry = Urls.query.filter_by(short=short_url).first()
@@ -78,14 +84,17 @@ def redirection(short_url):
     else:
         return f'<h1>Url doesnt exist</h1>'
 
-@app.route('/all-urls')
+@app.route('/my-urls/<int:page_num>')
 @login_required
-def display_all():
-    return render_template('all-urls.html', vals=Urls.query.filter_by(user_id = current_user.id).all(), base_url=base_url)
+def myurls(page_num=1):
+    myurls = db.session.query(User, Urls).join(Urls).filter_by(user_id = current_user.id).order_by(Urls.id_.desc()).paginate(per_page=5, page=page_num, error_out=True)
+    count = db.session.query(Urls).filter_by(user_id = current_user.id).count()
+    return render_template('all-urls.html', vals=myurls, base_url=base_url, count=count )
 
-@app.route('/user-location')
-def user_location():
-    return render_template('all-locations.html', vals=Location.query.all(), base_url=base_url)
+@app.route('/user-locations')
+@login_required
+def locations():
+    return render_template('all-locations.html', vals=db.session.query(Location, Urls).join(Urls).filter_by(user_id = current_user.id).order_by(Location.id.desc()).all(), base_url=base_url)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -138,8 +147,12 @@ def dashboard():
         form.username.data = current_user.username
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
+    count = db.session.query(Urls).filter_by(user_id = current_user.id).count()
+    greeting = fun_greetings()
+    loc = db.session.query(Location.city, Location.country, db.func.count(Location.city).label('count')).join(Urls).filter_by(user_id = current_user.id).group_by(Location.city).order_by(func.count().desc()).limit(5)
+    
     return render_template('dashboard.html', title='Account',
-                           image_file=image_file, form=form)
+                           image_file=image_file, form=form, link_count=count, greeting=greeting, loc=loc)
 
 def send_reset_email(user):
     token = user.get_reset_token()

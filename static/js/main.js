@@ -8,8 +8,25 @@ $(document).ready(function() {
         url : '/'
     })
     .done(function(data){
-        $('#output').text(data.output).show();
+        $('#output').val(data.output);
+        $('#url-wrapper').css({"display": "block"});
+        $('#url').val('');
     });
     e.preventDefault();
     });
 });
+
+function CopyText() {
+    var copyText = document.getElementById("output");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(copyText.value);
+    
+    var tooltip = document.getElementById("txttooltip");
+    tooltip.innerHTML = "Copied";
+  }
+  
+  function outFunc() {
+    var tooltip = document.getElementById("txttooltip");
+    tooltip.innerHTML = "Copy to clipboard";
+  }

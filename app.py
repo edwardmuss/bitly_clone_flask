@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
-from core.chars_regenerate import shorten_url_generate
-from core import app, db
 from core.routes import web
+from core.chars_regenerate import shorten_url_generate
+from core import *
 from flask_moment import Moment
 
 moment = Moment(app)

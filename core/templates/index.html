@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Tinly{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
 
@@ -19,19 +19,26 @@
 
   <section>
       <div class="row bg-primary">
-          <div class="container pt-5 align-items-center d-flex justify-content-center">
-            
+          <div class="container pt-5">
                 <div class="col-md-12">
-                    <form id="form" role="form" action="#", method="post"> 
-                        <div class="form-group">
-                            <input class="form-control form-rounded2" type="url" name="url" id="url" placeholder="Shorten URL" pattern="https://.*" size="" required>
-                        </div>         
-                        <div class="form-group">
-                            <input type="submit" value="Shorten URL" class="btn bg-black text-white form-control">  
-                        </div>   
-                    </form>
+                    <form class="form-inline" id="form" role="form" action="#", method="post">
+                        <div class="input-group flex-fill">
+                            <input type="text" class="form-control input-lg" type="url" name="url" id="url" placeholder="Shorten URL" pattern="https://.*" size="" required>
+                          <div class="input-group-append">
+                            <button type="submit" class="btn bg-black text-white mb-2">Shorten URL</button>
+                          </div> 
+                        </div>
+                      </form>
+                      <!-- <h4 class="pb-2" id="output"></h4> -->
+                      <div id="url-wrapper" class="" style="display:none">
+                        <div class="input-group flex-fill">
+                            <input type="text" class="form-control input-lg" id="output" placeholder="Shorten URL">
+                          <div class="input-group-append">
+                            <button onclick="CopyText()" onmouseout="outFunc()" class="btn btn-blue mb-2"><span class="tooltiptext" id="txttooltip">Copy</span></button>
+                          </div> 
+                        </div>
+                      </div>
                     <p class="p-2">By clicking SHORTEN URLs, you are agreeing to Tinly's Terms of Service, Privacy Policy, and Acceptable Use Policy</p>
-                    <h4 class="pb-2" id="output"></h4>
                 </div>
             
           </div>
@@ -49,7 +56,7 @@
               <div class="col-lg-6 order-lg-1">
                   <div class="p-5">
                       <h2 class="display-4">We're Tinly...</h2>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod aliquid, mollitia odio veniam sit iste esse assumenda amet aperiam exercitationem, ea animi blanditiis recusandae! Ratione voluptatum molestiae adipisci, beatae obcaecati.</p>
+                      <p>Free custom URL Shortener with many features that gives you better quality for links shortening. Shortened URLs will never expire. We do not display ads during direct redirecting to the original url.</p>
                   </div>
               </div>
           </div>
@@ -67,7 +74,7 @@
               <div class="col-lg-6">
                   <div class="p-5">
                       <h2 class="display-4">We salute you!</h2>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod aliquid, mollitia odio veniam sit iste esse assumenda amet aperiam exercitationem, ea animi blanditiis recusandae! Ratione voluptatum molestiae adipisci, beatae obcaecati.</p>
+                      <p>Track each shortened link and measure its performance to understand it. Detailed analytics provides you info about clicks, social media clicks, page referrer, devices, brands, browsers, systems, geo location, bots.</p>
                   </div>
               </div>
           </div>

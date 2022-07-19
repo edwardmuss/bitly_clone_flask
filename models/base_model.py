@@ -50,19 +50,6 @@ class User(db.Model, UserMixin):
         self.image_file = image_file
         self.password = password
 
-class Location(db.Model):
-    id = db.Column("id", db.Integer, primary_key=True)
-    url_id = db.Column("url_id", db.Integer, nullable=False)
-    country = db.Column("country", db.String())
-    city = db.Column("city", db.String(10), nullable=False)
-    created_at = db.Column(DateTime, default=datetime.datetime.now)
-    updated_at = db.Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-
-    def __init__(self, url_id, country, city):
-        self.url_id = url_id
-        self.country = country
-        self.city = city
-
 class Urls(db.Model):
     id_ = db.Column("id_", db.Integer, primary_key=True)
     user_id = db.Column("user_id", db.Integer, db.ForeignKey('user.id'), nullable=True, default=0)
@@ -77,3 +64,16 @@ class Urls(db.Model):
         self.long = long
         self.short = short
         self.hits = hits
+
+class Location(db.Model):
+    id = db.Column("id", db.Integer, primary_key=True)
+    url_id = db.Column("url_id", db.Integer, db.ForeignKey('urls.id_'), nullable=False)
+    country = db.Column("country", db.String())
+    city = db.Column("city", db.String(10), nullable=False)
+    created_at = db.Column(DateTime, default=datetime.datetime.now)
+    updated_at = db.Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+
+    def __init__(self, url_id, country, city):
+        self.url_id = url_id
+        self.country = country
+        self.city = city

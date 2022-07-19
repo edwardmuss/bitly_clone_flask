@@ -15,16 +15,16 @@
             <div class="col-md-12 mt-5">
                 <table class="table table-stripped table-bordered">
                     <thead class="">
-                        <th>Link ID</th>
+                        <th>Link</th>
                         <th>Country</th>
                         <th>City</th>
                     </thead>
                     <tbody>
-                        {% for row in vals %}
+                        {% for location, urls in vals %}
                         <tr>
-                            <td>{{row.url_id}}</td>
-                            <td>{{row.country}}</td>
-                            <td>{{row.city}}</td>
+                            <td><a href="{{base_url + '/' + urls.short}}">{{base_url + '/' + urls.short}}</a></td>
+                            <td>{{location.country}}</td>
+                            <td>{{location.city}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

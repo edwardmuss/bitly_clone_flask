@@ -9,9 +9,11 @@
             </div>
         </div>
     </div>
+
+    
+    <div class="container mt-5 mb-5">
         <div class="row">
-        <div class="container">
-            <div class="col-md-12 mt-5">
+            <div class="col-md-8">
                 <div class="content-section">
                     <div class="media">
                       <img class="rounded-circle account-img" src="{{ image_file }}">
@@ -23,7 +25,7 @@
                       <form method="POST" action="" enctype="multipart/form-data">
                           {{ form.hidden_tag() }}
                           <fieldset class="form-group">
-                              <legend class="border-bottom mb-4">Account Info</legend>
+                              <legend class="border-top mb-4">Account Info</legend>
                               <div class="form-group">
                                   {{ form.username.label(class="form-control-label") }}
               
@@ -62,9 +64,30 @@
                               </div>
                           </fieldset>
                           <div class="form-group">
-                              {{ form.submit(class="btn btn-outline-info") }}
+                              {{ form.submit(class="btn btn-outline-primary btn-block") }}
                           </div>
                       </form>
+                  </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">Dashboard</h5>
+                    <div class="card-body">
+                      <h5 class="card-title">{{greeting+ ' ' + current_user.username }}</h5>
+                      <p class="card-text border-bottom">Total Links <span class="pull-right badge badge-primary"><strong>{{ link_count }}</strong></span> </p>
+                      <a href="{{ url_for('myurls', page_num=1) }}" class="btn btn-primary">My Links</a>
+                    </div>
+                  </div>
+
+                  <div class="card">
+                    <h5 class="card-header">Top 5 Cities</h5>
+                    <div class="card-body">
+                      {% for location in loc %}
+                      <p class="card-text border-bottom">{{ location.city }}<span class="pull-right badge badge-success"><strong>{{ location.count }}</strong></span> </p>
+                      {%endfor%}
+                      <p class="card-text border-bottom"> </p>
+                      <a href="{{ url_for('myurls', page_num=1) }}" class="btn btn-primary">All Locations</a>
+                    </div>
                   </div>
             </div>
         </div>

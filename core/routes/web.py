@@ -150,9 +150,11 @@ def dashboard():
     count = db.session.query(Urls).filter_by(user_id = current_user.id).count()
     greeting = fun_greetings()
     loc = db.session.query(Location.city, Location.country, db.func.count(Location.city).label('count')).join(Urls).filter_by(user_id = current_user.id).group_by(Location.city).order_by(func.count().desc()).limit(5)
+    top_hits = db.session.query(Urls).filter_by(user_id = current_user.id).order_by(Urls.hits.desc()).limit(5)
+    total_hits = db.session.query(func.sum(Urls.hits).label('sum')).filter_by(user_id = current_user.id).first().sum
     
     return render_template('dashboard.html', title='Account',
-                           image_file=image_file, form=form, link_count=count, greeting=greeting, loc=loc)
+                           image_file=image_file, form=form, link_count=count, greeting=greeting, loc=loc, top_hits=top_hits, total_hits=total_hits, base_url=base_url)
 
 def send_reset_email(user):
     token = user.get_reset_token()

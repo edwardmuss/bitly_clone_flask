@@ -18,15 +18,22 @@
                     <div class="media">
                       <img class="rounded-circle account-img" src="{{ image_file }}">
                       <div class="media-body">
-                        <h2 class="account-heading">{{ current_user.username }}</h2>
+                        <h2 class="account-heading mt-2">{{ current_user.username }}</h2>
                         <p class="text-secondary">{{ current_user.email }}</p>
                       </div>
                     </div>
+                    <div class="card">
+                        <!-- <h5 class="card-header">Top 5 Cities</h5> -->
+                        <div class="card-body text-center m-3">
+                          <h3>{{ total_hits }}+ Total Link Clicks</h3>
+                          <a href="{{ url_for('myurls', page_num=1) }}" class="btn btn-primary btn-block2 mt-2">View Stats</a>
+                        </div>
+                      </div>
                       <form method="POST" action="" enctype="multipart/form-data">
                           {{ form.hidden_tag() }}
                           <fieldset class="form-group">
-                              <legend class="border-top mb-4">Account Info</legend>
-                              <div class="form-group">
+                              <!-- <legend class="mb-4 mt-4">Update your profile</legend> -->
+                              <div class="form-group mt-5">
                                   {{ form.username.label(class="form-control-label") }}
               
                                   {% if form.username.errors %}
@@ -80,13 +87,22 @@
                   </div>
 
                   <div class="card">
+                    <h5 class="card-header">Top 5 Links</h5>
+                    <div class="card-body">
+                      {% for top_hit in top_hits %}
+                      <p class="card-text border-bottom"><a target="_blank" href="{{base_url + '/' + top_hit.short}}"
+                        >{{base_url + '/' + top_hit.short}}</a><span class="pull-right"><strong>{{ top_hit.hits }}</strong></span> </p>
+                      {%endfor%}
+                    </div>
+                  </div>
+                  <div class="card">
                     <h5 class="card-header">Top 5 Cities</h5>
                     <div class="card-body">
                       {% for location in loc %}
                       <p class="card-text border-bottom">{{ location.city }}<span class="pull-right badge badge-success"><strong>{{ location.count }}</strong></span> </p>
                       {%endfor%}
                       <p class="card-text border-bottom"> </p>
-                      <a href="{{ url_for('myurls', page_num=1) }}" class="btn btn-primary">All Locations</a>
+                      <a href="{{ url_for('locations') }}" class="btn btn-primary">All Locations</a>
                     </div>
                   </div>
             </div>

@@ -16,6 +16,17 @@ $(document).ready(function() {
     });
 });
 
+/* Initialization of datatable */
+$(document).ready(function() {
+    var table = $('#table_location').DataTable({ 
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        order: [[4, 'desc']],
+});
+});
+
 function CopyText() {
     var copyText = document.getElementById("output");
     copyText.select();

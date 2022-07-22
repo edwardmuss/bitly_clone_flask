@@ -62,7 +62,7 @@ def about():
 def redirection(short_url):
     qry = Urls.query.filter_by(short=short_url).first()
     public_ip = request.remote_addr
-    url = 'https://api.ipgeolocation.io/ipgeo?apiKey=3a97a60077094f69a3e34d6b2edc4f96&ip={}'.format("197.156.137.155")
+    url = 'https://api.ipgeolocation.io/ipgeo?apiKey=3a97a60077094f69a3e34d6b2edc4f96&ip={}'.format(public_ip)
     # request.remote_addr
     response = urlopen(url)
     data = json.load(response)

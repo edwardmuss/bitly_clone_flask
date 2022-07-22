@@ -7,14 +7,13 @@ Tinly is a project that resembles Bitly or Cutly. The project concetrates on how
 ### Clone the project
 
 ```
-git clone 
-https://github.com/edwardmuss/bitly_clone_flask.git
+git clone https://github.com/edwardmuss/bitly_clone_flask.git
 ```
 
 ### cd into the project
 
 ```
-cd bitly_clone_flask_master
+cd bitly_clone_flask
 ```
 
 ### Activate Virtual Environment

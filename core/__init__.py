@@ -9,11 +9,11 @@ from flask_mail import Mail
 from flask_redmail import RedMail
 import os
 
-base_url = "http://127.0.0.1:5000"
+base_url = os.getenv("BASE_URL")
 
 app = Flask(__name__, static_folder="../static")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shorty.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 

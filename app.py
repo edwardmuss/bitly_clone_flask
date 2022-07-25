@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for
 from core.routes import web
+from core.routes import social_auth
 from core.chars_regenerate import shorten_url_generate
 from core import *
 from flask_moment import Moment

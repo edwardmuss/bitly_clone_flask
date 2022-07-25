@@ -1,3 +1,4 @@
+from flask import jsonify
 from sqlalchemy import DateTime, Integer
 import json
 import datetime
@@ -7,9 +8,10 @@ from core import db, app
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
+    name = db.Column(db.String(50), nullable=False, unique=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+    image_file = db.Column(db.String(120), nullable=False, default='default.jpg')
+    login_method = db.Column(db.String(20), nullable=False, default='email')
     password = db.Column(db.String(80), nullable=False)
     created_at = db.Column(DateTime, default=datetime.datetime.now)
     updated_at = db.Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
@@ -44,10 +46,11 @@ class User(db.Model, UserMixin):
         return User.query.get(id)
         # return jsonify(data['user_id'])
 
-    def __init__(self, username, email, image_file, password):
-        self.username = username
+    def __init__(self, name, email, image_file, login_method, password):
+        self.name = name
         self.email = email
         self.image_file = image_file
+        self.login_method = login_method
         self.password = password
 
 class Urls(db.Model):

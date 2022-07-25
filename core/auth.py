@@ -21,28 +21,27 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 class RegisterForm(FlaskForm):
-    username = StringField(validators=[
-                           InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
+    name = StringField(validators=[
+                           InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Your name or company name"})
     email = StringField(validators=[InputRequired(), Email()], render_kw={"placeholder": "Email Address"})
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
     confirm_password = PasswordField(validators=[InputRequired(), EqualTo('password')], render_kw={"placeholder": "Confirm Password"})
 
-    submit = SubmitField('Create An Account')
+    submit = SubmitField('Create Account')
 
-    def validate_username(self, username):
-        existing_user_username = User.query.filter_by(
-            username=username.data).first()
-        if existing_user_username:
-            # flash('That username already exists. Please choose a different one.')
-            flash('That username already exists. Please choose a different one.', 'error')
+    def validate_email(self, email):
+        existing_user_email = User.query.filter_by(
+            email=email.data).first()
+        if existing_user_email:
+            flash('That email already exists. Please choose a different one.', 'error')
             raise ValidationError(
-                'That username already exists. Please choose a different one.')
+                'That email already exists. Please choose a different one.')
 
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[
-                           InputRequired(), Length(min=4, max=30)], render_kw={"placeholder": "Email or Username"})
+                           InputRequired(), Email(), Length(min=4, max=30)], render_kw={"placeholder": "Email"})
 
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
@@ -52,19 +51,15 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Username',
+    name = StringField('Name',
                            validators=[InputRequired(), Length(min=2, max=20)])
     
     email = StringField('Email',
                         validators=[InputRequired(), Email()])
-    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
-    submit = SubmitField('Update')
 
-    def validate_username(self, username):
-        if username.data != current_user.username:
-            user = User.query.filter_by(username=username.data).first()
-            if user:
-                raise ValidationError('That username is taken. Please choose a different one.')
+    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
+
+    submit = SubmitField('Update')
 
     def validate_email(self, email):
         if email.data != current_user.email:

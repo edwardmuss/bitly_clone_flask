@@ -3,6 +3,7 @@ import secrets
 from urllib.request import urlopen
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from sqlalchemy import func
+import validators
 from core.greetings import fun_greetings
 from models.base_model import User, Urls, Location
 from core.chars_regenerate import shorten_url_generate
@@ -12,6 +13,9 @@ from core import *
 from PIL import Image
 from flask_mail import Message
 import datetime
+from authlib.integrations.flask_client import OAuth
+
+oauth = OAuth(app)
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
@@ -102,15 +106,18 @@ def login():
         return redirect(request.referrer)
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first() or User.query.filter_by(email=form.username.data).first()
+        user = User.query.filter_by(email=form.username.data).first()
+        login_method = user.login_method
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember_me.data)
                 next_page = request.args.get('next')
                 return redirect(next_page) if next_page else redirect(url_for('dashboard'))
-                # login_user(user)
-                # return redirect(url_for('dashboard'))
-        flash('Username or Password is incorrect', 'error')
+            
+            elif(login_method != "email"):
+                flash('Please login with {} or reset your password'.format(login_method), 'error')
+            else:
+                flash('Email or Password is incorrect', 'error')
     return render_template('login.html', form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -121,7 +128,7 @@ def register():
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, email=form.email.data,image_file="default.jpg", password=hashed_password)
+        new_user = User(name=form.name.data, email=form.email.data,image_file="default.jpg", login_method="email", password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
         flash('You have sucessfully Registered, Please Login.', 'success')
@@ -138,20 +145,25 @@ def dashboard():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
-        current_user.username = form.username.data
+        current_user.name = form.name.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('dashboard'))
     elif request.method == 'GET':
-        form.username.data = current_user.username
+        form.name.data = current_user.name
         form.email.data = current_user.email
-    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     count = db.session.query(Urls).filter_by(user_id = current_user.id).count()
     greeting = fun_greetings()
     loc = db.session.query(Location.city, Location.country, db.func.count(Location.city).label('count')).join(Urls).filter_by(user_id = current_user.id).group_by(Location.city).order_by(func.count().desc()).limit(5)
     top_hits = db.session.query(Urls).filter_by(user_id = current_user.id).order_by(Urls.hits.desc()).limit(5)
     total_hits = db.session.query(func.sum(Urls.hits).label('sum')).filter_by(user_id = current_user.id).first().sum
+
+    validate_image_url=validators.url(current_user.image_file)
+    if validate_image_url==True:
+        image_file = current_user.image_file
+    else:
+        image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     
     return render_template('dashboard.html', title='Account',
                            image_file=image_file, form=form, link_count=count, greeting=greeting, loc=loc, top_hits=top_hits, total_hits=total_hits, base_url=base_url)

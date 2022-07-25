@@ -147,7 +147,19 @@ def facebook_auth():
     token = oauth.facebook.authorize_access_token()
     resp = oauth.facebook.get(
         'https://graph.facebook.com/me?fields=id,name,email,picture{url}')
-    profile = resp.json()
-    print("Facebook User ", profile)
-    return profile
+    userinfo = resp.json()
+    print("Facebook User ", userinfo)
+    user = User.query.filter_by(email=userinfo["email"]).first()
+    if user:
+        login_user(user)
+        next_page = request.args.get('next')
+        return redirect(next_page) if next_page else redirect(url_for('dashboard'))
+        
+    # Create user and send user back to homepage
+    new_user = User(name=userinfo["name"], email=userinfo["email"], image_file=userinfo["picture"]["data"]["url"], login_method="Facebook", password=bcrypt.generate_password_hash(get_random_string(20)))
+    db.session.add(new_user)
+    db.session.commit()
+    user = User.query.filter_by(email=userinfo["email"]).first()
+    login_user(user)
+    return redirect(url_for("dashboard"))
 

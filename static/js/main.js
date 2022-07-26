@@ -9,6 +9,7 @@ $(document).ready(function() {
     })
     .done(function(data){
         $('#output').val(data.output);
+        // $('#qr').html('<img class="img-fluid text-center" src="{{ qrcode('+data.output+') }}">');
         $('#url-wrapper').css({"display": "block"});
         $('#url').val('');
     });

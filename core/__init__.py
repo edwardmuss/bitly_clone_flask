@@ -7,30 +7,32 @@ from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_redmail import RedMail
+from flask_qrcode import QRcode
 import os
 
 base_url = os.getenv("BASE_URL")
 
 app = Flask(__name__, static_folder="../static")
+qrcode = QRcode(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'thisisasecretkey'
+app.config['SECRET_KEY'] = '$6552BDc3487TTrsdeOIIIEeueb$'
 
 # RedMail configs
-app.config["EMAIL_HOST"] = "smtp.zoho.com"
-app.config["EMAIL_PORT"] = 587
-app.config["EMAIL_USERNAME"] = "info@cloudrebue.co.ke"
-app.config["EMAIL_PASSWORD"] = "Blogger@99%"
-app.config["EMAIL_SENDER"] = "info@cloudrebue.co.ke"
+app.config["EMAIL_HOST"] = os.getenv('MAIL_SERVER')
+app.config["EMAIL_PORT"] = os.getenv('MAIL_PORT')
+app.config["EMAIL_USERNAME"] = os.getenv('MAIL_USERNAME')
+app.config["EMAIL_PASSWORD"] = os.getenv('MAIL_PASSWORD')
+app.config["EMAIL_SENDER"] = os.getenv('MAIL_USERNAME')
 email = RedMail(app)
 
 # Flask Mail Configs
-app.config['MAIL_SERVER'] = 'smtp.zoho.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = 'info@cloudrebue.co.ke'
-app.config['MAIL_PASSWORD'] = 'Blogger@99%'
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 mail = Mail(app)
 
 db = SQLAlchemy(app)

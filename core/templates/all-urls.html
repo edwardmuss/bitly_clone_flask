@@ -16,7 +16,8 @@ content %}
           <th>Long</th>
           <th>Short</th>
           <th>Hits</th>
-          <th>UserId</th>
+          <th>QR Code</th>
+          <th>Created</th>
         </thead>
         <tbody>
           {% for user, urls in vals.items %}
@@ -28,7 +29,8 @@ content %}
               >
             </td>
             <td>{{urls.hits}}</td>
-            <td>{{user.username}}</td>
+            <td><img class="img-fluid" src="{{ qrcode(base_url + '/' + urls.short, box_size=5, border=5, back_color='#ee0979', fill_color='#fff') }}"></td>
+            <td>{{urls.created_at.strftime("%d %b, %Y %H:%M")}}</td>
           </tr>
           {% endfor %}
         </tbody>

@@ -1,3 +1,4 @@
+from platform import platform
 from flask import jsonify
 from sqlalchemy import DateTime, Integer
 import json
@@ -71,12 +72,20 @@ class Urls(db.Model):
 class Location(db.Model):
     id = db.Column("id", db.Integer, primary_key=True)
     url_id = db.Column("url_id", db.Integer, db.ForeignKey('urls.id_'), nullable=False)
-    country = db.Column("country", db.String())
+    country = db.Column("country", db.String(50))
     city = db.Column("city", db.String(10), nullable=False)
+    platform = db.Column("platform", db.String(50))
+    os = db.Column("os", db.String(50))
+    browser = db.Column("browser", db.String(50))
+    ip = db.Column("ip", db.String(50))
     created_at = db.Column(DateTime, default=datetime.datetime.now)
     updated_at = db.Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
-    def __init__(self, url_id, country, city):
+    def __init__(self, url_id, country, city, platform, os, browser, ip):
         self.url_id = url_id
         self.country = country
         self.city = city
+        self.platform = platform
+        self.os = os
+        self.browser = browser
+        self.ip = ip

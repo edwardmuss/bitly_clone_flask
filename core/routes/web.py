@@ -1,5 +1,6 @@
 import json
 import secrets
+import httpagentparser
 from urllib.request import urlopen
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from sqlalchemy import func
@@ -15,7 +16,11 @@ from flask_mail import Message
 import datetime
 from authlib.integrations.flask_client import OAuth
 
+from werkzeug.user_agent import UserAgent
+
 oauth = OAuth(app)
+
+
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
@@ -65,13 +70,17 @@ def about():
 @app.route('/<short_url>')
 def redirection(short_url):
     qry = Urls.query.filter_by(short=short_url).first()
+    userInfo = httpagentparser.detect(request.headers.get('User-Agent'))
+    # public_ip = "41.89.17.2"
     public_ip = request.remote_addr
     url = 'https://api.ipgeolocation.io/ipgeo?apiKey=3a97a60077094f69a3e34d6b2edc4f96&ip={}'.format(public_ip)
-    # request.remote_addr
     response = urlopen(url)
     data = json.load(response)
     country = data['country_name']
     city = data['city']
+    userPlatform = userInfo['platform']['name']
+    userOs = userInfo['os']['name']
+    userBrowser = userInfo['browser']['name']
 
     if qry:
         url_id =qry.id_
@@ -80,7 +89,7 @@ def redirection(short_url):
         db.session.merge(qry)
         db.session.commit()
 
-        user_location = Location(url_id, country, city)
+        user_location = Location(url_id, country, city, userPlatform, userOs, userBrowser, public_ip)
         db.session.add(user_location)
         db.session.commit()
 
@@ -156,7 +165,11 @@ def dashboard():
     count = db.session.query(Urls).filter_by(user_id = current_user.id).count()
     greeting = fun_greetings()
     loc = db.session.query(Location.city, Location.country, db.func.count(Location.city).label('count')).join(Urls).filter_by(user_id = current_user.id).group_by(Location.city).order_by(func.count().desc()).limit(5)
+    platform = db.session.query(Location.platform, db.func.count(Location.platform).label('count')).join(Urls).filter_by(user_id = current_user.id).group_by(Location.platform).order_by(func.count().desc()).limit(5)
+    browser = db.session.query(Location.browser, db.func.count(Location.browser).label('count')).join(Urls).filter_by(user_id = current_user.id).group_by(Location.browser).order_by(func.count().desc()).limit(5)
+    os = db.session.query(Location.os, db.func.count(Location.os).label('count')).join(Urls).filter_by(user_id = current_user.id).group_by(Location.os).order_by(func.count().desc()).limit(5)
     top_hits = db.session.query(Urls).filter_by(user_id = current_user.id).order_by(Urls.hits.desc()).limit(5)
+    # today_hits = db.session.query(func.sum(Urls.hits).label('sum')).filter_by(user_id = current_user.id).filter(Urls.created_at.date() == datetime.date.today()).first().sum
     total_hits = db.session.query(func.sum(Urls.hits).label('sum')).filter_by(user_id = current_user.id).first().sum
 
     validate_image_url=validators.url(current_user.image_file)
@@ -166,7 +179,7 @@ def dashboard():
         image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     
     return render_template('dashboard.html', title='Account',
-                           image_file=image_file, form=form, link_count=count, greeting=greeting, loc=loc, top_hits=top_hits, total_hits=total_hits, base_url=base_url)
+                           image_file=image_file, form=form, link_count=count, greeting=greeting, loc=loc, platforms=platform, browsers=browser, uos=os, top_hits=top_hits, total_hits=total_hits, base_url=base_url)
 
 def send_reset_email(user):
     token = user.get_reset_token()

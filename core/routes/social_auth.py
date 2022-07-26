@@ -73,6 +73,7 @@ def google_auth():
     db.session.commit()
     user = User.query.filter_by(email=userinfo["email"]).first()
     login_user(user)
+    return redirect(url_for("dashboard"))
 
 # Github login route
 @app.route('/login/github')

@@ -38,6 +38,9 @@ or
 python3 app.py
 ```
 ![](screenshot.png)
+![](screenshot-2.jpeg)
+![](screenshot-3.jpeg)
+![](screenshot-4.jpeg)
 
 
 

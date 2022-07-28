@@ -13,7 +13,13 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css">
 	<title>{% block title %}{% endblock %} | Tinly</title>
+    <meta property="description" content="Free custom URL Shortener with many features that gives you better quality for links shortening. Shortened URLs will never expire. We do not display ads during direct redirecting to the original url." />
+
     <link rel="icon" type="image/x-icon" href="{{ url_for('static',filename='images/favicon.ico') }}">
+
+    <meta property="og:title" content="{{ self.title }} | Tinly" />
+    <meta property="og:description" content="Free custom URL Shortener with many features that gives you better quality for links shortening. Shortened URLs will never expire. We do not display ads during direct redirecting to the original url." />
+    <meta property="og:image" content="https://gadgetsbeat.com/wp-content/uploads/2022/04/URL-Shortener-Meaning-Benefits-When-To-Use.jpg" />
     {{ moment.include_moment() }}
 </head>
 <body oncontextmenu='return true' class='snippet-body'>

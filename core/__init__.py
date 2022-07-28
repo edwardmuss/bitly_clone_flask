@@ -8,6 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_redmail import RedMail
 from flask_qrcode import QRcode
+from dotenv import load_dotenv
+load_dotenv()
 import os
 
 base_url = os.getenv("BASE_URL")
